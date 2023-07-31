@@ -49,6 +49,8 @@ class Paddle:
         self.id = canvas.create_rectangle(
             x, y, x + width, y + height, fill="white")
         self.speed = 0
+        self.height = height
+        self.width = width
 
     def move(self):
         self.canvas.move(self.id, 0, self.speed)
@@ -78,6 +80,16 @@ class Score:
         self.update()
 
 
+def simple_ai_paddle_a(ball_y, paddle_y):
+    # This AI simply follows the ball's vertical position.
+    return (ball_y - paddle_y) / 20
+
+
+def simple_ai_paddle_b(ball_y, paddle_y):
+    # This AI follows the ball's vertical position but moves a bit slower.
+    return (ball_y - paddle_y) / 25
+
+
 class GameController:
     def __init__(self, canvas, paddle_a, paddle_b, ball, score_a, score_b, canvas_size):
         self.canvas = canvas
@@ -92,6 +104,9 @@ class GameController:
 
         self.paddle_a_speed = 0
         self.paddle_b_speed = 0
+
+        self.ai_paddle_a = simple_ai_paddle_a
+        self.ai_paddle_b = simple_ai_paddle_b
 
         # Reset both scores to 0 before starting the game
         self.score_a.reset()
@@ -114,11 +129,28 @@ class GameController:
         self.canvas.bind("<KeyRelease-Down>",
                          lambda event: self.paddle_b.set_speed(0))
 
+    def update_paddle_ai(self):
+        ball_y = self.ball.get_bbox()[1] + self.ball.size / 2
+
+        # Update paddle_a speed based on AI function
+        paddle_a_y = self.paddle_a.get_bbox()[1] + self.paddle_a.height / 2
+        self.paddle_a_speed = self.ai_paddle_a(ball_y, paddle_a_y)
+
+        # Update paddle_b speed based on AI function
+        paddle_b_y = self.paddle_b.get_bbox()[1] + self.paddle_b.height / 2
+        self.paddle_b_speed = self.ai_paddle_b(ball_y, paddle_b_y)
+
+        # Move the paddles based on the AI speeds
+        self.paddle_a.set_speed(self.paddle_a_speed*random.uniform(1, 3))
+        self.paddle_b.set_speed(self.paddle_b_speed*random.uniform(1, 3))
+
     def check_ball_paddle_collision(self):
         if self.intersect(self.ball.get_bbox(), self.paddle_a.get_bbox()):
-            self.ball.set_speed_x(abs(self.ball.speed_x))
+            self.ball.set_speed_x(abs(self.ball.speed_x)
+                                  * random.uniform(0.5, 1.5))
         elif self.intersect(self.ball.get_bbox(), self.paddle_b.get_bbox()):
-            self.ball.set_speed_x(-abs(self.ball.speed_x))
+            self.ball.set_speed_x(-abs(self.ball.speed_x)
+                                  * random.uniform(0.5, 1.5))
 
     def check_ball_out_of_bounds(self):
         pos = self.ball.get_bbox()
@@ -144,6 +176,7 @@ class GameController:
         self.check_ball_out_of_bounds()
 
     def update(self):
+        self.update_paddle_ai()
         self.move_ball()
         self.move_paddles()
         self.canvas.after(16, self.update)
