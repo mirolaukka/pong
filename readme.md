@@ -47,4 +47,8 @@ You can customize the game's appearance and behavior by modifying the constants 
 
 Feel free to experiment and make modifications to the AI behavior or the game rules according to your preferences.
 
+## TODO
+
+- Add an actual AI trained using machine learning to the game instead of a simple algorithm to match the balls `y` value.
+
 Enjoy watching the AI-controlled paddles play Pong!

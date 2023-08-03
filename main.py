@@ -141,16 +141,14 @@ class GameController:
         self.paddle_b_speed = self.ai_paddle_b(ball_y, paddle_b_y)
 
         # Move the paddles based on the AI speeds
-        self.paddle_a.set_speed(self.paddle_a_speed*random.uniform(1, 3))
-        self.paddle_b.set_speed(self.paddle_b_speed*random.uniform(1, 3))
+        self.paddle_a.set_speed(self.paddle_a_speed*random.uniform(1, 2.2))
+        self.paddle_b.set_speed(self.paddle_b_speed*random.uniform(1, 2.2))
 
     def check_ball_paddle_collision(self):
         if self.intersect(self.ball.get_bbox(), self.paddle_a.get_bbox()):
-            self.ball.set_speed_x(abs(self.ball.speed_x)
-                                  * random.uniform(0.5, 1.5))
+            self.ball.set_speed_x(abs(self.ball.speed_x))
         elif self.intersect(self.ball.get_bbox(), self.paddle_b.get_bbox()):
-            self.ball.set_speed_x(-abs(self.ball.speed_x)
-                                  * random.uniform(0.5, 1.5))
+            self.ball.set_speed_x(-abs(self.ball.speed_x))
 
     def check_ball_out_of_bounds(self):
         pos = self.ball.get_bbox()
